@@ -48,11 +48,16 @@ require_once __DIR__ . '/../src/Controllers/OrderController.php';
 // ❌ MAL APLICADO: credenciales en el código fuente y dentro del repositorio.
 //    Si el repo es público, la credencial es pública.
 //    Además, cada integrante edita esta línea => conflicto en cada merge.
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'laboratorio');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+$configFile = __DIR__ . '/../config/database.php';
 
+$config = is_file($configFile)
+    ? require $configFile
+    : require __DIR__ . '/../config/database.example.php';
+
+define('DB_HOST', $config['host']);
+define('DB_NAME', $config['name']);
+define('DB_USER', $config['user']);
+define('DB_PASS', $config['pass']);
 /*
  * ✅ FORMA CORRECTA:
  *   $config = require __DIR__ . '/../config/database.php';   // ignorado por git
