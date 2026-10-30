@@ -1,99 +1,148 @@
-# laboratorio-pedidos — proyecto de práctica
+# Laboratorio de Pedidos — TP Integrador
 
-Sistema de gestión de pedidos de un laboratorio de análisis clínicos.
-**PHP Vanilla, sin frameworks, sin Composer.** Corre en XAMPP tal cual está.
+**Materia:** Metodología de Sistemas II  
+**Carrera:** Tecnicatura Universitaria en Programación — UTN FRRe, sede Formosa  
+**Modalidad:** Trabajo grupal — 2 integrantes
 
-> ⚠️ **Este proyecto está roto a propósito.**
-> Cada archivo contiene deuda técnica sembrada, marcada con comentarios:
->
-> ```php
-> // ❌ MAL APLICADO: qué método está mal y qué principio viola
-> // ✅ FORMA CORRECTA: qué patrón corresponde y cómo se estructura
-> ```
->
-> El objetivo no es que funcione mejor: ya funciona. El objetivo es que
-> **se pueda cambiar sin miedo**.
+## 1. Descripción
 
----
+Este proyecto consiste en un sistema de gestión de pedidos para un laboratorio de análisis clínicos, desarrollado con PHP sin frameworks.
 
-## Cómo levantarlo
+Se utilizó como base el proyecto de práctica proporcionado por la cátedra, que contenía problemas de diseño y deuda técnica.
 
-1. Copiar la carpeta dentro de `C:\xampp\htdocs\`.
-2. Iniciar Apache desde el panel de XAMPP (MySQL **no** hace falta).
-3. Abrir: `http://localhost/mini-proyecto-laboratorio/public/index.php`
+El objetivo del trabajo fue identificar esos problemas, aplicar patrones de diseño y utilizar un flujo de colaboración mediante Git y GitHub.
 
-Acciones disponibles:
+## 2. Tecnologías utilizadas
 
-| URL | Qué hace |
+- PHP 8.0 o superior.
+- XAMPP con Apache.
+- Git y GitHub.
+- Visual Studio Code u otro editor de código.
+
+El proyecto no requiere Composer ni Laravel.
+
+La aplicación utiliza almacenamiento simulado en memoria, por lo que no necesita iniciar MySQL para ejecutar las funciones actuales.
+
+## 3. Instalación y ejecución
+
+### Paso 1. Clonar el repositorio
+
+Abrir una terminal dentro de `C:\xampp\htdocs` y ejecutar:
+
+```bash
+git clone https://github.com/apolobenitez65-prog/patron_dise-o.git mini-proyecto-laboratorio
+```
+
+### Paso 2. Iniciar el servidor
+
+Abrir el panel de XAMPP e iniciar Apache.
+
+No es necesario iniciar MySQL para esta versión del proyecto.
+
+### Paso 3. Abrir la aplicación
+
+Ingresar desde el navegador:
+
+http://localhost/mini-proyecto-laboratorio/public/index.php
+
+### Paso 4. Probar las acciones disponibles
+
+| Acción | URL |
 |---|---|
-| `public/index.php?accion=crear` | Crea un pedido pasando por toda la deuda |
-| `public/index.php?accion=listar` | Lista pedidos desde la vista |
-| `public/index.php?accion=reporte` | Genera un reporte con banderas booleanas |
+| Crear pedido | `http://localhost/mini-proyecto-laboratorio/public/index.php?accion=crear` |
+| Listar pedidos | `http://localhost/mini-proyecto-laboratorio/public/index.php?accion=listar` |
+| Mostrar reporte | `http://localhost/mini-proyecto-laboratorio/public/index.php?accion=reporte` |
 
-La persistencia está simulada en memoria para que el proyecto arranque sin
-configurar MySQL. Eso **no** es parte de la deuda a corregir.
+Los datos utilizados son de demostración. La aplicación no guarda los pedidos en una base de datos permanente.
 
----
+## 4. Patrones de diseño implementados
 
-## Mapa de deudas
+Durante el desarrollo se trabajó con cuatro patrones:
 
-| Archivo | Síntoma sembrado | Patrón / principio | Ejercicio |
-|---|---|---|---|
-| `public/index.php` | Requires manuales, credenciales en el código, ruteo con `if` | Autoload + config externa + tabla de rutas | — |
-| `src/Database/Connection.php` | Una conexión nueva por consulta; excepción silenciada | **Singleton** | — |
-| `src/Notifications/NotificationSender.php` | `if` por tipo repetido en 3 archivos | **Factory** | Ej. 2 |
-| `src/Pricing/PriceCalculator.php` | `switch` con todos los algoritmos + lógica duplicada | **Strategy** | Ej. 1 |
-| `src/Events/OrderEvents.php` | Avisos encadenados a mano a clases concretas | **Observer** | Ej. 5 |
-| `src/Legacy/LegacyNotifier.php` | Clase de terceros modificada + copia y pega | **Adapter** | Ej. 3 |
-| `src/Reports/ReportGenerator.php` | Parámetros booleanos (`boolean trap`) | **Decorator** | Ej. 4 |
-| `src/Services/OrderService.php` | Método que hace de todo | **Facade** + SRP | Ej. 6 |
-| `src/Controllers/OrderController.php` | SQL + negocio + HTML en el controlador | **MVC** + SRP | Ej. 7 |
-| `src/Models/Order.php` | Modelo que se persiste y calcula precios | **Repository** + Strategy | — |
-| `views/orders.php` | Consulta, calcula y no escapa la salida | **MVC** | Ej. 8 |
+| Patrón | Problema identificado | Solución |
+|---|---|---|
+| Strategy | Cálculo de precios concentrado en un `switch`. | Separación de algoritmos mediante `PricingStrategy` y clases independientes. |
+| Factory | Condiciones repetidas para crear notificaciones. | Centralización de la creación de objetos mediante `NotificationFactory`. |
+| Adapter | Modificación y duplicación de código heredado. | Adaptación mediante `LegacyNotifierAdapter`. |
+| Decorator | Uso de parámetros booleanos para agregar opciones a reportes. | Creación de decoradores para firma digital, PDF y marca de agua. |
 
----
+Las clases de estos patrones se incorporaron al repositorio. Algunas partes del sistema todavía mantienen la implementación original, por lo que la integración no está completamente finalizada.
 
-## La medida de la deuda de este proyecto
+## 5. Pruebas
 
-El descuento de obra social (**0.7**) está escrito en **cinco archivos distintos**:
+### Prueba de Strategy
 
-```
-src/Models/Order.php
-src/Pricing/PriceCalculator.php   (dos veces)
-src/Services/OrderService.php
-src/Controllers/OrderController.php
-views/orders.php
+Desde la carpeta raíz del proyecto, ejecutar:
+
+```bash
+php tests/StrategyTest.php
 ```
 
-Cuando el laboratorio lo cambie al 25%, ese número es exactamente
-cuántos lugares hay que tocar y cuántas oportunidades hay de olvidarse uno.
+El archivo verifica los cálculos correspondientes a cuatro tipos de pacientes:
 
-**Ese es el punto de toda la unidad.**
+| Tipo | Monto de prueba | Resultado esperado |
+|---|---:|---:|
+| Particular | $10.000 | $10.000 |
+| Obra social | $10.000 | $7.000 |
+| Jubilado | $10.000 | $5.000 |
+| Prepaga | $10.000 | $8.000 |
 
----
+### Prueba de Adapter
 
-## Mecánica de la clase práctica
+Ejecutar:
 
-```
-1. Cada grupo toma UN archivo del mapa de deudas.       (5 min)
-2. Lee los comentarios ❌ y ✅.                          (5 min)
-3. Refactoriza en una rama propia: feat/patron-<nombre>  (20 min)
-4. Abre un Pull Request que responda tres cosas:
-     - qué deuda encontró (con la línea exacta)
-     - qué patrón aplicó y por qué ese y no otro
-     - qué consecuencia negativa tiene su propia solución
-5. Otro grupo revisa el PR y comenta.                    (10 min)
+```bash
+php tests/AdapterTest.php
 ```
 
-El PR revisado por otro grupo es evidencia del TP Integrador.
+Esta prueba verifica que el adaptador pueda invocar el método original del sistema heredado y obtener el mensaje esperado.
 
----
+### Pruebas desde el navegador
 
-## Reglas del refactor
+Verificar las acciones `crear`, `listar` y `reporte` utilizando las direcciones indicadas en la sección 3.
 
-- **No se rompe funcionalidad.** Antes y después, la app hace lo mismo.
-- **Un patrón por rama.** Nada de una rama con seis cambios mezclados.
-- **Se borra el código viejo.** Dejar el método anterior "por las dudas" es
-  deuda nueva.
-- **Se documenta la consecuencia negativa.** Un patrón sin contras analizadas
-  es sobreingeniería esperando su turno.
+El reporte actual devuelve una representación en texto de las opciones seleccionadas. No genera un documento PDF real.
+
+## 6. Organización del proyecto
+
+| Carpeta o archivo | Función |
+|---|---|
+| `public/index.php` | Punto de entrada de la aplicación. |
+| `src/Controllers/` | Controladores. |
+| `src/Models/` | Modelos de datos. |
+| `src/Pricing/` | Cálculo de precios y estrategias. |
+| `src/Notifications/` | Notificaciones y fábrica de objetos. |
+| `src/Legacy/` | Sistema heredado y adaptador. |
+| `src/Reports/` | Reportes y decoradores. |
+| `src/Services/` | Servicios del sistema. |
+| `views/` | Vistas. |
+| `tests/` | Pruebas del proyecto. |
+| `docs/` | Documentación de deuda técnica. |
+
+## 7. Metodología de trabajo
+
+El desarrollo se realizó mediante ramas independientes y Pull Requests.
+
+Cada integrante trabajó en sus patrones asignados, registró sus modificaciones con commits y participó en revisiones cruzadas antes de integrar los cambios a `main`.
+
+También se realizaron correcciones de integración en una rama independiente.
+
+## 8. Deuda técnica y limitaciones
+
+El análisis completo se encuentra en:
+
+`docs/DEUDA-TECNICA.md`
+
+Entre las mejoras pendientes se identificaron:
+
+- Centralizar todas las reglas de precios que siguen repetidas.
+- Reemplazar la carga manual de clases.
+- Separar la configuración de base de datos del código versionado.
+- Completar la integración de los patrones en los componentes que todavía utilizan código anterior.
+- Ampliar las pruebas para comprobar el comportamiento de todos los componentes.
+
+## 9. Objetivo alcanzado
+
+El trabajo permitió practicar la aplicación de patrones de diseño y la colaboración sobre un repositorio compartido.
+
+Se crearon componentes que organizan mejor los cálculos, las notificaciones y los reportes, aunque todavía existen tareas pendientes para completar la refactorización del sistema.
