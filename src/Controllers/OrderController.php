@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ============================================================================
  *  CONTROLADOR DE PEDIDOS
@@ -85,8 +86,12 @@ class OrderController
      */
     public function report(): void
     {
-        $generador = new ReportGenerator();
-        echo $generador->generate('Pedidos del dia', true, true, true);
+        $reporte = new BasicReport('Pedidos del dia');
+        $reporte = new DigitalSignatureDecorator($reporte);
+        $reporte = new PdfReportDecorator($reporte);
+        $reporte = new WatermarkDecorator($reporte);
+
+        echo $reporte->generate();
     }
 }
 

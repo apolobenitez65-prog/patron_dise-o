@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../src/Legacy/Notification.php';
+require_once __DIR__ . '/../src/Notifications/Notification.php';
 require_once __DIR__ . '/../src/Legacy/LegacyNotifier.php';
 require_once __DIR__ . '/../src/Legacy/LegacyNotifierAdapter.php';
 
