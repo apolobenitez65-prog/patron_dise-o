@@ -1,0 +1,30 @@
+
+name: Pruebas automaticas PHP
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Verificar sintaxis PHP
+        run: |
+          find src tests public -name "*.php" \
+            -exec php -l {} \;
+
+      - name: Probar Strategy
+        run: php tests/StrategyTest.php
+
+      - name: Probar Adapter
+        run: php tests/AdapterTest.php
